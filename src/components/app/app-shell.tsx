@@ -34,6 +34,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
           ))}
         </nav>
+        <div className="absolute inset-x-0 bottom-0 border-t border-zinc-200 p-3 text-xs text-zinc-500">
+          <div className="grid gap-1">
+            <Link href="/offer" className="hover:text-zinc-900">Оферта</Link>
+            <Link href="/privacy" className="hover:text-zinc-900">Конфиденциальность</Link>
+            <Link href="/personal-data" className="hover:text-zinc-900">Персональные данные</Link>
+          </div>
+        </div>
       </aside>
       <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/95 lg:ml-64">
         <div className="flex h-16 items-center justify-between px-4 lg:px-8">
