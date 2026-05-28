@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RiskLevel {
+  low
+  medium
+  high
+}
+
+enum CompanyStatus {
+  ACTIVE
+  LIQUIDATION
+  INACTIVE
+  BANKRUPTCY
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String?
+  name          String?
+  createdAt     DateTime  @default(now())
+  checks        Check[]
+  monitoringItems MonitoringItem[]
+  subscriptions Subscription[]
+}
+
+model Company {
+  id                  String        @id
+  name                String
+  shortName           String
+  type                String
+  inn                 String        @unique
+  ogrn                String        @unique
+  registrationDate    DateTime
+  status              CompanyStatus
+  address             String
+  director            String
+  okved               String
+  authorizedCapital   Int?
+  massAddress         Boolean       @default(false)
+  directorChangesYear Int           @default(0)
+  checks              Check[]
+  monitoringItems     MonitoringItem[]
+  reports             Report[]
+}
+
+model Check {
+  id        String    @id @default(cuid())
+  userId    String?
+  companyId String
+  reportId  String    @unique
+  score     Int
+  level     RiskLevel
+  createdAt DateTime  @default(now())
+  user      User?     @relation(fields: [userId], references: [id])
+  company   Company   @relation(fields: [companyId], references: [id])
+  report    Report    @relation(fields: [reportId], references: [id])
+}
+
+model Report {
+  id              String   @id
+  companyId       String
+  summary         String
+  score           Int
+  level           RiskLevel
+  reasonsJson     Json
+  recommendations Json
+  sourcesJson     Json
+  createdAt       DateTime @default(now())
+  company         Company  @relation(fields: [companyId], references: [id])
+  check           Check?
+}
+
+model MonitoringItem {
+  id        String   @id @default(cuid())
+  userId    String?
+  companyId String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+  company   Company  @relation(fields: [companyId], references: [id])
+  events    MonitoringEvent[]
+
+  @@unique([userId, companyId])
+}
+
+model MonitoringEvent {
+  id               String         @id
+  monitoringItemId String
+  title            String
+  severity         RiskLevel
+  eventDate        DateTime
+  createdAt        DateTime       @default(now())
+  monitoringItem   MonitoringItem @relation(fields: [monitoringItemId], references: [id])
+}
+
+model Subscription {
+  id             String   @id @default(cuid())
+  userId         String
+  plan           String
+  checksLimit    Int
+  monitoringLimit Int
+  provider       String?
+  providerRef    String?
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id])
+}
