@@ -11,7 +11,7 @@ export default function LoginPage() {
             <Building2 className="h-5 w-5" />
           </div>
           <CardTitle>Личный кабинет</CardTitle>
-          <p className="text-sm text-zinc-500">Демо: demo@risk.local / password123</p>
+          <p className="text-sm text-zinc-500">Войдите или создайте аккаунт для проверки контрагентов.</p>
         </CardHeader>
         <CardContent>
           <LoginForm />

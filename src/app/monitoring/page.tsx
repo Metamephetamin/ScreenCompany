@@ -6,12 +6,13 @@ import { RiskBadge } from "@/components/app/risk-badge";
 import { companyDataProvider } from "@/server/providers";
 import { getMonitoringList } from "@/server/store";
 import { formatDate } from "@/lib/utils";
-import { getCurrentUserId } from "@/server/session";
+import { requireCurrentUser } from "@/server/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function MonitoringPage() {
-  const userId = await getCurrentUserId();
+  const user = await requireCurrentUser();
+  const userId = user.id;
   const items = await Promise.all(
     (await getMonitoringList(userId)).map(async (item) => ({
       item,

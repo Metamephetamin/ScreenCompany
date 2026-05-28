@@ -9,8 +9,8 @@ import { normalizeEmailInput, stripWhitespace } from "@/lib/credentials";
 
 export function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("demo@risk.local");
-  const [password, setPassword] = useState("password123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"login" | "register">("login");
   const [error, setError] = useState("");
 

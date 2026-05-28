@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatDate, formatMoney, formatSourceStatus } from "@/lib/utils";
 import { getCompanyBundle } from "@/server/riskEngine";
 import { getMonitoring } from "@/server/store";
-import { getCurrentUserId } from "@/server/session";
+import { requireCurrentUser } from "@/server/session";
 
 export default async function CompanyPage({
   params,
@@ -25,9 +25,10 @@ export default async function CompanyPage({
 }) {
   const { id } = await params;
   const { report } = await searchParams;
+  const user = await requireCurrentUser();
   const bundle = await getCompanyBundle(id);
   if (!bundle) notFound();
-  const monitoring = await getMonitoring(id, await getCurrentUserId());
+  const monitoring = await getMonitoring(id, user.id);
   const reportId = report ?? bundle.report.id;
   const courtSource = bundle.report.sources.find((source) => source.name === "Арбитраж");
   const financeSource = bundle.report.sources.find((source) => source.name === "Финансы");

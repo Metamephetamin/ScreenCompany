@@ -2,10 +2,13 @@ import { Search } from "lucide-react";
 import { CheckForm } from "@/components/app/check-form";
 import { Disclaimer } from "@/components/app/disclaimer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { requireCurrentUser } from "@/server/session";
 
 export const dynamic = "force-dynamic";
 
-export default function CheckPage() {
+export default async function CheckPage() {
+  await requireCurrentUser();
+
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div>

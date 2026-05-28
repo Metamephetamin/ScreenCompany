@@ -9,7 +9,9 @@ const checkSchema = z.object({
 });
 
 export async function GET() {
-  return NextResponse.json({ history: await getHistory(await getCurrentUserId()) });
+  const userId = await getCurrentUserId();
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  return NextResponse.json({ history: await getHistory(userId) });
 }
 
 export async function POST(request: Request) {
@@ -19,7 +21,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
   }
 
-  const result = await runCompanyCheck(parsed.data.query, await getCurrentUserId());
+  const userId = await getCurrentUserId();
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const result = await runCompanyCheck(parsed.data.query, userId);
   if (!result) {
     return NextResponse.json(
       { error: "Контрагент с таким ИНН/ОГРН не найден в подключенных источниках" },

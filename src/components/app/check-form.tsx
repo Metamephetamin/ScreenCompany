@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 
 export function CheckForm() {
   const router = useRouter();
-  const [query, setQuery] = useState("7701234567");
+  const [query, setQuery] = useState("7707083893");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -48,8 +48,8 @@ export function CheckForm() {
         </Button>
       </div>
       <div className="flex flex-wrap gap-2 text-sm text-zinc-500">
-        Тестовые ИНН:
-        {["7701234567", "7812345678", "5409876543", "6658123456", "502712345678"].map(
+        Примеры ИНН:
+        {["7707083893", "7736050003", "7704217370", "7736207543", "7721503606"].map(
           (inn) => (
             <button
               key={inn}

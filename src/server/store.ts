@@ -17,6 +17,7 @@ import { createPasswordHash, verifyPassword } from "@/server/security";
 
 const demoEmail = "demo@risk.local";
 const systemUserEmail = "system@risk.local";
+const useMockMonitoringEvents = process.env.NODE_ENV !== "production";
 
 export async function ensureDemoUser() {
   await prisma.user.upsert({
@@ -172,7 +173,7 @@ export async function getMonitoring(companyId: string, userId?: string | null): 
     return {
       companyId,
       status: "не отслеживается",
-      events: mockMonitoringEvents[companyId] ?? [],
+      events: useMockMonitoringEvents ? (mockMonitoringEvents[companyId] ?? []) : [],
     };
   }
 
@@ -194,7 +195,7 @@ export async function toggleMonitoring(companyId: string, userId?: string | null
       data: { active },
       include: { events: { orderBy: { eventDate: "desc" } } },
     });
-    if (active) await seedMonitoringEvents(item.id, companyId);
+    if (active && useMockMonitoringEvents) await seedMonitoringEvents(item.id, companyId);
     const refreshed = await prisma.monitoringItem.findUnique({
       where: { id: item.id },
       include: { events: { orderBy: { eventDate: "desc" } } },
@@ -206,7 +207,7 @@ export async function toggleMonitoring(companyId: string, userId?: string | null
     data: { companyId, userId: ownerId, active: true },
     include: { events: true },
   });
-  await seedMonitoringEvents(item.id, companyId);
+  if (useMockMonitoringEvents) await seedMonitoringEvents(item.id, companyId);
   const refreshed = await prisma.monitoringItem.findUnique({
     where: { id: item.id },
     include: { events: { orderBy: { eventDate: "desc" } } },
@@ -240,7 +241,7 @@ export async function registerUser(email: string, password: string) {
 }
 
 export async function findUser(email: string, password: string) {
-  await ensureDemoUser();
+  if (process.env.NODE_ENV !== "production") await ensureDemoUser();
   const normalizedEmail = normalizeEmailInput(email);
   const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (!user?.passwordHash) return null;

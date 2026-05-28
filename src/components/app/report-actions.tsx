@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { Check, Copy, Download } from "lucide-react";
-import { jsPDF } from "jspdf";
 import { Button } from "@/components/ui/button";
 
-export function ReportActions({ reportId, companyName }: { reportId: string; companyName: string }) {
+export function ReportActions({ reportId }: { reportId: string; companyName: string }) {
   const [copied, setCopied] = useState(false);
 
   async function copyLink() {
@@ -15,13 +14,7 @@ export function ReportActions({ reportId, companyName }: { reportId: string; com
   }
 
   function exportPdf() {
-    const pdf = new jsPDF();
-    pdf.setFont("helvetica", "normal");
-    pdf.text("Kontragent Risk Report", 16, 18);
-    pdf.text(companyName, 16, 30);
-    pdf.text(`Report ID: ${reportId}`, 16, 42);
-    pdf.text("Full Russian report is available on the web page.", 16, 54);
-    pdf.save(`${reportId}.pdf`);
+    window.print();
   }
 
   return (
@@ -32,7 +25,7 @@ export function ReportActions({ reportId, companyName }: { reportId: string; com
       </Button>
       <Button type="button" variant="secondary" onClick={exportPdf}>
         <Download className="h-4 w-4" />
-        Экспорт PDF
+        Сохранить PDF
       </Button>
     </div>
   );

@@ -7,20 +7,20 @@ import { Disclaimer } from "@/components/app/disclaimer";
 import { HistoryTable } from "@/components/app/history-table";
 import { getCompanyBundle } from "@/server/riskEngine";
 import { getHistory, getMonitoringList } from "@/server/store";
-import { mockCompanies } from "@/server/providers/mockData";
 import type { CompanyCheckResult } from "@/lib/types";
-import { getCurrentUserId } from "@/server/session";
+import { requireCurrentUser } from "@/server/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const userId = await getCurrentUserId();
-  const bundles = (await Promise.all(mockCompanies.map((company) => getCompanyBundle(company.id)))).filter(
-    (item): item is CompanyCheckResult => Boolean(item),
-  );
+  const user = await requireCurrentUser();
+  const userId = user.id;
   const history = await getHistory(userId);
   const monitoring = await getMonitoringList(userId);
-  const highRisk = bundles.filter((item) => item.risk.level === "high").slice(0, 3);
+  const highRiskHistory = history.filter((item) => item.riskLevel === "high").slice(0, 3);
+  const highRiskBundles = (
+    await Promise.all(highRiskHistory.map((item) => getCompanyBundle(item.companyId)))
+  ).filter((item): item is CompanyCheckResult => Boolean(item));
 
   return (
     <div className="space-y-6">
@@ -37,7 +37,7 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Metric icon={Clock} label="Проверок" value={String(history.length)} />
         <Metric icon={ShieldCheck} label="В мониторинге" value={String(monitoring.length)} />
-        <Metric icon={AlertTriangle} label="Высокий риск" value={String(highRisk.length)} />
+        <Metric icon={AlertTriangle} label="Высокий риск" value={String(highRiskHistory.length)} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
             <CardTitle>Последние высокорисковые компании</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {highRisk.map((item) => (
+            {highRiskBundles.map((item) => (
               <Link
                 key={item.company.id}
                 href={`/company/${item.company.id}`}
@@ -61,6 +61,9 @@ export default async function DashboardPage() {
                 </div>
               </Link>
             ))}
+            {highRiskBundles.length === 0 && (
+              <p className="text-sm text-zinc-500">Высокорисковых проверок пока нет.</p>
+            )}
           </CardContent>
         </Card>
 

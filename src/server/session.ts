@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { prisma } from "@/server/prisma";
 
 export const appSessionCookie = "contragent_session";
@@ -47,6 +48,12 @@ export async function getCurrentUser() {
 
 export async function getCurrentUserId() {
   return (await getCurrentUser())?.id ?? null;
+}
+
+export async function requireCurrentUser() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  return user;
 }
 
 export async function clearAppSession(sessionToken: string) {
