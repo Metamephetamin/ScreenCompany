@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3, Building2, CreditCard, History, Search, Settings, ShieldCheck } from "lucide-react";
+import { BarChart3, Building2, CreditCard, History, Search, Settings, ShieldCheck, ShieldUser } from "lucide-react";
 
 const nav = [
   { href: "/dashboard", label: "Дашборд", icon: BarChart3 },
@@ -7,6 +7,7 @@ const nav = [
   { href: "/monitoring", label: "Мониторинг", icon: ShieldCheck },
   { href: "/billing", label: "Тарифы", icon: CreditCard },
   { href: "/settings", label: "Настройки", icon: Settings },
+  { href: "/admin", label: "Админка", icon: ShieldUser },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -18,7 +19,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Building2 className="h-5 w-5" />
           </div>
           <div>
-            <div className="font-semibold">Контрагент Риск</div>
+            <div className="font-semibold">Контурагент Риск</div>
             <div className="text-xs text-zinc-500">B2B проверка сделок</div>
           </div>
         </div>
@@ -46,7 +47,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex h-16 items-center justify-between px-4 lg:px-8">
           <Link href="/dashboard" className="flex items-center gap-2 font-semibold lg:hidden">
             <Building2 className="h-5 w-5" />
-            Контрагент Риск
+            Контурагент Риск
           </Link>
           <div className="hidden items-center gap-2 text-sm text-zinc-500 lg:flex">
             <History className="h-4 w-4" />
