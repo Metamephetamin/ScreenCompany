@@ -10,11 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { formatDate, formatSourceStatus } from "@/lib/utils";
 import { companyDataProvider } from "@/server/providers";
-import { getReport } from "@/server/store";
+import { getReportForUser } from "@/server/store";
+import { requireCurrentUser } from "@/server/session";
 
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const report = await getReport(id);
+  const user = await requireCurrentUser();
+  const report = await getReportForUser(id, user);
   if (!report) notFound();
   const company = await companyDataProvider.findById(report.companyId);
   if (!company) notFound();

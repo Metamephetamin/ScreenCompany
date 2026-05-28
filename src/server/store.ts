@@ -168,6 +168,32 @@ export async function getReport(id: string): Promise<Report | null> {
   };
 }
 
+export async function getReportForUser(
+  id: string,
+  user: { id: string; role?: string | null },
+): Promise<Report | null> {
+  if (user.role === "admin") return getReport(id);
+
+  const check = await prisma.check.findFirst({
+    where: { reportId: id, userId: user.id },
+    select: { reportId: true },
+  });
+  if (!check) return null;
+  return getReport(id);
+}
+
+export async function canAccessCompany(
+  companyId: string,
+  user: { id: string; role?: string | null },
+) {
+  if (user.role === "admin") return true;
+  const check = await prisma.check.findFirst({
+    where: { companyId, userId: user.id },
+    select: { id: true },
+  });
+  return Boolean(check);
+}
+
 export async function getMonitoring(companyId: string, userId?: string | null): Promise<MonitoringItem> {
   await ensureCompanyForId(companyId);
   const ownerId = await resolveOwnerId(userId);

@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { appSessionCookie, createAppSession, shouldUseSecureCookies } from "@/server/session";
 import { findUser } from "@/server/store";
-import { consumeRateLimit, credentialsSchema, rateLimitKey } from "@/server/security";
+import { assertSameOrigin, consumeRateLimit, credentialsSchema, rateLimitKey } from "@/server/security";
 
 export async function POST(request: Request) {
+  const origin = assertSameOrigin(request);
+  if (!origin.allowed) return NextResponse.json({ error: origin.error }, { status: 403 });
+
   let body: unknown;
   try {
     body = await request.json();

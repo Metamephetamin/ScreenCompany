@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { registerUser } from "@/server/store";
-import { consumeRateLimit, rateLimitKey, registerSchema } from "@/server/security";
+import { assertSameOrigin, consumeRateLimit, rateLimitKey, registerSchema } from "@/server/security";
 
 export async function POST(request: Request) {
+  const origin = assertSameOrigin(request);
+  if (!origin.allowed) return NextResponse.json({ error: origin.error }, { status: 403 });
+
   let body: unknown;
   try {
     body = await request.json();

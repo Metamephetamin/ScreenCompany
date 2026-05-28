@@ -4,6 +4,7 @@ import { z } from "zod";
 import { runCompanyCheck } from "@/server/riskEngine";
 import { getHistory } from "@/server/store";
 import { getCurrentUserId } from "@/server/session";
+import { assertSameOrigin } from "@/server/security";
 import {
   createDeviceToken,
   getClientIp,
@@ -28,6 +29,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const origin = assertSameOrigin(request);
+  if (!origin.allowed) return NextResponse.json({ error: origin.error }, { status: 403 });
+
   const body = await request.json();
   const parsed = checkSchema.safeParse({ query: String(body.query ?? "").replace(/\D/g, "") });
   if (!parsed.success) {

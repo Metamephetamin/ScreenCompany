@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { appSessionCookie, clearAppSession } from "@/server/session";
+import { assertSameOrigin } from "@/server/security";
 
 export async function POST(request: Request) {
+  const origin = assertSameOrigin(request);
+  if (!origin.allowed) return NextResponse.json({ error: origin.error }, { status: 403 });
+
   const sessionToken = request.headers
     .get("cookie")
     ?.split(";")

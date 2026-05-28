@@ -71,3 +71,17 @@ export function consumeRateLimit(key: string, limit: number, windowMs: number) {
 export function rateLimitKey(scope: string, identifier: string) {
   return `${scope}:${stripWhitespace(identifier).toLowerCase()}`;
 }
+
+export function assertSameOrigin(request: Request) {
+  const origin = request.headers.get("origin");
+  if (!origin) return { allowed: true };
+
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const host = forwardedHost ?? request.headers.get("host");
+  const forwardedProto = request.headers.get("x-forwarded-proto");
+  const protocol = forwardedProto ?? new URL(request.url).protocol.replace(":", "");
+  const expectedOrigin = host ? `${protocol}://${host}` : new URL(request.url).origin;
+
+  if (origin === expectedOrigin) return { allowed: true };
+  return { allowed: false, error: "Недопустимый источник запроса" };
+}

@@ -127,7 +127,14 @@ export async function getUserTrialSummary(userId: string) {
     limit,
     used: checks,
     remaining: Math.max(limit - checks, 0),
-    workspace: user?.workspace ?? null,
+    workspace: user?.workspace
+      ? {
+          inn: user.workspace.inn,
+          contactEmail: user.workspace.contactEmail,
+          verificationStatus: user.workspace.verificationStatus,
+          reviewNote: user.workspace.reviewNote,
+        }
+      : null,
   };
 }
 

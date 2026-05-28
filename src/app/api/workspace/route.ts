@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { assertSameOrigin } from "@/server/security";
 import { getCurrentUserId } from "@/server/session";
 import { getUserTrialSummary, upsertWorkspaceClaim } from "@/server/trialLimits";
 
@@ -24,6 +25,8 @@ export async function GET() {
 export async function POST(request: Request) {
   const userId = await getCurrentUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const origin = assertSameOrigin(request);
+  if (!origin.allowed) return NextResponse.json({ error: origin.error }, { status: 403 });
 
   let body: unknown;
   try {

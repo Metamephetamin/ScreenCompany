@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  assertSameOrigin,
   credentialsSchema,
   normalizeEmailInput,
   registerSchema,
@@ -43,5 +44,29 @@ describe("auth input hardening", () => {
     });
 
     expect(result.success).toBe(false);
+  });
+
+  it("rejects cross-origin unsafe requests", () => {
+    const request = new Request("https://konturagent.ru/api/check", {
+      method: "POST",
+      headers: {
+        host: "konturagent.ru",
+        origin: "https://evil.example",
+      },
+    });
+
+    expect(assertSameOrigin(request).allowed).toBe(false);
+  });
+
+  it("allows same-origin unsafe requests", () => {
+    const request = new Request("https://konturagent.ru/api/check", {
+      method: "POST",
+      headers: {
+        host: "konturagent.ru",
+        origin: "https://konturagent.ru",
+      },
+    });
+
+    expect(assertSameOrigin(request).allowed).toBe(true);
   });
 });

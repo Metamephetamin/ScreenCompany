@@ -27,6 +27,7 @@ model User {
   passwordHash    String?
   name            String?
   image           String?
+  role            String    @default("user")
   createdAt       DateTime  @default(now())
   accounts        Account[]
   sessions        Session[]
