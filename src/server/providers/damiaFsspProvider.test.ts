@@ -26,4 +26,28 @@ describe("mapDamiaFsspProceedings", () => {
       },
     ]);
   });
+
+  it("maps DaMIA nested inn and registration-number response", () => {
+    const result = mapDamiaFsspProceedings({
+      "7721503606": {
+        "1641869/25/77056-ИП": {
+          "Дата": "19.11.2025",
+          "Предмет": "Страховые взносы, включая пени",
+          "Сумма": 1000,
+          "Остаток": 250,
+          "Статус": "Погашено",
+        },
+      },
+    });
+
+    expect(result).toEqual([
+      {
+        id: "1641869/25/77056-ИП",
+        title: "Страховые взносы, включая пени",
+        amount: 250,
+        date: "2025-11-19",
+        status: "Погашено",
+      },
+    ]);
+  });
 });

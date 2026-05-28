@@ -61,6 +61,18 @@ export function mapDamiaFsspProceedings(data: DamiaFsspResponse): EnforcementCas
 function extractProceedingRows(data: DamiaFsspResponse): DamiaProceeding[] {
   if (Array.isArray(data)) return data;
   if ("result" in data && Array.isArray(data.result)) return data.result;
+
+  const nestedRows = Object.values(data).flatMap((value) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return [];
+    return Object.entries(value as Record<string, unknown>).map(([registrationNumber, row]) =>
+      row && typeof row === "object" && !Array.isArray(row)
+        ? ({ "РегНомер": registrationNumber, ...(row as DamiaProceeding) } as DamiaProceeding)
+        : null,
+    );
+  });
+  const filteredNestedRows = nestedRows.filter((row): row is DamiaProceeding => Boolean(row));
+  if (filteredNestedRows.length > 0) return filteredNestedRows;
+
   const possibleRows = Object.values(data).find((value) => Array.isArray(value));
   return Array.isArray(possibleRows) ? (possibleRows as DamiaProceeding[]) : [];
 }
