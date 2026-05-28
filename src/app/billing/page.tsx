@@ -9,7 +9,7 @@ const plans = [
     name: "Free",
     price: "0 ₽",
     checks: "1 проверка сразу, 3 после подтверждения",
-    features: ["История проверок", "Web-отчет", "Антиабьюз по устройству и организации"],
+    features: ["История проверок", "Web-отчет", "Сохранение отчета"],
     action: "Текущий тариф",
     href: null,
   },
@@ -17,17 +17,25 @@ const plans = [
     name: "Pro",
     price: "2 900 ₽/мес",
     checks: "100 проверок в месяц",
-    features: ["Риск-скоринг", "Рекомендации по сделке", "Сохранение отчета в PDF"],
+    features: ["Риск-скоринг", "Рекомендации по условиям сделки", "Отчеты для согласования"],
     action: "Запросить счет",
     href: "mailto:billing@konturagent.ru?subject=Подключение%20Pro%20Контрагент%20Риск",
   },
   {
     name: "Business",
-    price: "по запросу",
-    checks: "Мониторинг списка компаний",
-    features: ["События мониторинга", "Командный кабинет", "Интеграция оплаты после подключения CloudPayments"],
-    action: "Обсудить условия",
+    price: "7 900 ₽/мес",
+    checks: "500 проверок в месяц",
+    features: ["Мониторинг до 100 компаний", "События по изменениям", "Приоритетная поддержка"],
+    action: "Запросить счет",
     href: "mailto:billing@konturagent.ru?subject=Подключение%20Business%20Контрагент%20Риск",
+  },
+  {
+    name: "Enterprise",
+    price: "19 900 ₽/мес",
+    checks: "2 000 проверок в месяц",
+    features: ["Мониторинг до 500 компаний", "Расширенные лимиты для команды", "Индивидуальные условия договора"],
+    action: "Обсудить условия",
+    href: "mailto:billing@konturagent.ru?subject=Подключение%20Enterprise%20Контрагент%20Риск",
   },
 ];
 
@@ -39,7 +47,7 @@ export default async function BillingPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Тарифы</h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Онлайн-оплата подключается. До подключения CloudPayments тарифы активируются вручную по счету.
+          Выберите объем проверок и мониторинга под регулярную работу с контрагентами.
         </p>
       </div>
       <Card>
@@ -49,7 +57,7 @@ export default async function BillingPage() {
             <div>
               <div className="font-medium">Оплата для ООО и ИП</div>
               <div className="mt-1 text-sm text-zinc-500">
-                Сейчас доступна заявка на счет. Эквайринг CloudPayments будет подключен после договора и ключей.
+                Подберем тариф, подготовим счет и активируем доступ после согласования условий.
               </div>
             </div>
           </div>
@@ -60,7 +68,7 @@ export default async function BillingPage() {
           </Button>
         </CardContent>
       </Card>
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-4">
         {plans.map((plan) => (
           <Card key={plan.name} className={plan.name === "Pro" ? "border-zinc-900" : undefined}>
             <CardHeader>
