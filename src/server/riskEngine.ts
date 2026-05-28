@@ -17,13 +17,22 @@ import { saveCheck } from "@/server/store";
 export async function runCompanyCheck(
   query: string,
   userId?: string | null,
+  fingerprint?: { clientIpHash?: string; deviceHash?: string },
 ): Promise<CompanyCheckResult | null> {
-  return buildCompanyCheck(query, { persist: true, userId });
+  return buildCompanyCheck(query, { persist: true, userId, fingerprint });
 }
 
 async function buildCompanyCheck(
   query: string,
-  { persist, userId }: { persist: boolean; userId?: string | null },
+  {
+    persist,
+    userId,
+    fingerprint,
+  }: {
+    persist: boolean;
+    userId?: string | null;
+    fingerprint?: { clientIpHash?: string; deviceHash?: string };
+  },
 ): Promise<CompanyCheckResult | null> {
   const company = await companyDataProvider.findByInnOrOgrn(query);
   if (!company) return null;
@@ -66,7 +75,7 @@ async function buildCompanyCheck(
     sources,
   };
 
-  if (persist) await saveCheck(company, report, userId);
+  if (persist) await saveCheck(company, report, userId, fingerprint);
 
   return { company, risk, courtCases, finances, enforcementCases, bankruptcy, report };
 }

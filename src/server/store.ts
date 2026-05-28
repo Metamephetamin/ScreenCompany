@@ -80,7 +80,12 @@ async function ensureCompany(company: Company) {
   });
 }
 
-export async function saveCheck(company: Company, report: Report, userId?: string | null) {
+export async function saveCheck(
+  company: Company,
+  report: Report,
+  userId?: string | null,
+  fingerprint?: { clientIpHash?: string; deviceHash?: string },
+) {
   await ensureCompany(company);
   const user = userId ? null : await ensureSystemUser();
   const ownerId = userId ?? user?.id ?? null;
@@ -117,6 +122,8 @@ export async function saveCheck(company: Company, report: Report, userId?: strin
       score: report.risk.score,
       level: report.risk.level,
       createdAt: new Date(report.createdAt),
+      clientIpHash: fingerprint?.clientIpHash,
+      deviceHash: fingerprint?.deviceHash,
     },
   });
 }
