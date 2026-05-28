@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { BarChart3, Building2, CreditCard, History, Search, Settings, ShieldCheck, ShieldUser } from "lucide-react";
+import { BarChart3, Building2, CreditCard, History, Info, Search, Settings, ShieldCheck, ShieldUser } from "lucide-react";
 
 const nav = [
   { href: "/dashboard", label: "Дашборд", icon: BarChart3 },
+  { href: "/about", label: "О сервисе", icon: Info },
   { href: "/check", label: "Проверка", icon: Search },
   { href: "/monitoring", label: "Мониторинг", icon: ShieldCheck },
   { href: "/billing", label: "Тарифы", icon: CreditCard },
