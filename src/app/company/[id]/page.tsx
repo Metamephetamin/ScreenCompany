@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatDate, formatMoney } from "@/lib/utils";
+import { formatDate, formatMoney, formatSourceStatus } from "@/lib/utils";
 import { getCompanyBundle } from "@/server/riskEngine";
 import { getMonitoring } from "@/server/store";
 import { getCurrentUserId } from "@/server/session";
@@ -29,6 +29,8 @@ export default async function CompanyPage({
   if (!bundle) notFound();
   const monitoring = await getMonitoring(id, await getCurrentUserId());
   const reportId = report ?? bundle.report.id;
+  const courtSource = bundle.report.sources.find((source) => source.name === "Арбитраж");
+  const financeSource = bundle.report.sources.find((source) => source.name === "Финансы");
 
   return (
     <div className="space-y-6">
@@ -128,7 +130,7 @@ export default async function CompanyPage({
           <ListCard
             icon={Landmark}
             title="Судебные дела"
-            empty="Судебные дела не найдены"
+            empty={courtSource?.status === "not_configured" ? "Источник не подключен" : "Судебные дела не найдены"}
             items={bundle.courtCases.map((item) => `${item.id} · ${item.role === "defendant" ? "ответчик" : "истец"} · ${formatMoney(item.amount)} · ${item.status}`)}
           />
         </TabsContent>
@@ -137,7 +139,11 @@ export default async function CompanyPage({
           <Card>
             <CardHeader><CardTitle>Финансовая динамика</CardTitle></CardHeader>
             <CardContent>
-              <FinanceChart data={bundle.finances} />
+              {financeSource?.status === "not_configured" ? (
+                <p className="text-sm text-zinc-500">Источник не подключен</p>
+              ) : (
+                <FinanceChart data={bundle.finances} />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -158,7 +164,7 @@ export default async function CompanyPage({
               {bundle.report.sources.map((source) => (
                 <div key={`${source.name}-${source.updatedAt}`} className="rounded-md border border-zinc-200 p-3 text-sm">
                   <div className="font-medium">{source.name}</div>
-                  <div className="text-zinc-500">Обновлено {formatDate(source.updatedAt)}</div>
+                  <div className="text-zinc-500">{formatSourceStatus(source)}</div>
                 </div>
               ))}
             </CardContent>

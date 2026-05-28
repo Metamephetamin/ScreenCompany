@@ -12,6 +12,7 @@ export type SourceName =
 export type SourceMeta = {
   name: SourceName;
   updatedAt: string;
+  status?: "connected" | "not_configured" | "mock";
 };
 
 export type Company = {

@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatSourceStatus } from "@/lib/utils";
 import { companyDataProvider } from "@/server/providers";
 import { getReport } from "@/server/store";
 
@@ -89,9 +89,9 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
         <CardHeader><CardTitle>Источники</CardTitle></CardHeader>
         <CardContent className="grid gap-3 md:grid-cols-2">
           {report.sources.map((source) => (
-            <div key={`${source.name}-${source.updatedAt}`} className="rounded-md border border-zinc-200 p-3 text-sm">
-              <div className="font-medium">{source.name}</div>
-              <div className="text-zinc-500">Обновлено {formatDate(source.updatedAt)}</div>
+              <div key={`${source.name}-${source.updatedAt}`} className="rounded-md border border-zinc-200 p-3 text-sm">
+                <div className="font-medium">{source.name}</div>
+              <div className="text-zinc-500">{formatSourceStatus(source)}</div>
             </div>
           ))}
         </CardContent>

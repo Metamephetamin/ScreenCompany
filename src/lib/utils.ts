@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { RiskLevel } from "@/lib/types";
+import type { RiskLevel, SourceMeta } from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -21,6 +21,12 @@ export function formatDate(value: string) {
     month: "2-digit",
     year: "numeric",
   }).format(new Date(value));
+}
+
+export function formatSourceStatus(source: SourceMeta) {
+  if (source.status === "not_configured") return "Источник не подключен";
+  if (source.status === "mock") return `Демо-данные от ${formatDate(source.updatedAt)}`;
+  return `Обновлено ${formatDate(source.updatedAt)}`;
 }
 
 export function riskLabel(level: RiskLevel) {
