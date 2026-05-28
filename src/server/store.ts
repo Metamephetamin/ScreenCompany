@@ -274,7 +274,7 @@ export async function persistMonitoringEvents(
         source: event.source,
       },
       create: {
-        id: event.id,
+        id: `${item.id}:${fingerprint}`,
         monitoringItemId: item.id,
         title: event.title,
         severity: event.severity,
@@ -322,7 +322,7 @@ async function seedMonitoringEvents(monitoringItemId: string, companyId: string)
         source: "mock",
       },
       create: {
-        id: event.id,
+        id: `${monitoringItemId}:${event.id}`,
         monitoringItemId,
         title: event.title,
         severity: event.severity,
