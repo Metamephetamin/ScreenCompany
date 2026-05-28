@@ -3,6 +3,7 @@
 ## What Is Wired Now
 
 - `DADATA_API_KEY`: enables real company lookup by INN/OGRN through DaData `findById/party`.
+- `DAMIA_FSSP_API_KEY`: enables real FSSP enforcement lookup through DaMIA API-ФССП `isps`.
 - PostgreSQL/Prisma stores users, password hashes, app sessions, checks, reports, monitoring companies, and monitoring events.
 - `/api/cron/monitoring`: protected polling endpoint for real monitoring jobs.
 
@@ -34,10 +35,11 @@ FNS describes API access to accounting reports as a paid government service. For
 
 ### Arbitration, Enforcement, Bankruptcy
 
-Do not scrape KAD, FSSP, or Fedresurs in production. Use a legal API provider or a formal data-access agreement. Add credentials as env vars and implement the existing provider interfaces:
+DaMIA API-ФССП is wired for enforcement proceedings. Register at `https://damia.ru/apifssp`, choose API-Старт, copy the API key into `DAMIA_FSSP_API_KEY`.
+
+Do not scrape KAD or Fedresurs in production. Use a legal API provider or a formal data-access agreement. Add credentials as env vars and implement the existing provider interfaces:
 
 - `CourtCasesProvider`
-- `EnforcementProvider`
 - `BankruptcyProvider`
 
 ## Required Production Env
@@ -48,4 +50,5 @@ NEXTAUTH_URL="https://your-domain.example"
 NEXTAUTH_SECRET="long-random-secret"
 CRON_SECRET="long-random-secret"
 DADATA_API_KEY="..."
+DAMIA_FSSP_API_KEY="..."
 ```
