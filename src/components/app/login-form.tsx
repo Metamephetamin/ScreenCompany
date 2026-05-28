@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LockKeyhole, Mail } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { normalizeEmailInput, stripWhitespace } from "@/lib/credentials";
@@ -12,6 +13,7 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"login" | "register">("login");
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState("");
 
   async function submit(event: React.FormEvent) {
@@ -23,10 +25,19 @@ export function LoginForm() {
     setPassword(sanitizedPassword);
 
     if (mode === "register") {
+      if (!termsAccepted) {
+        setError("Примите пользовательское соглашение перед регистрацией");
+        return;
+      }
+
       const response = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: sanitizedEmail, password: sanitizedPassword }),
+        body: JSON.stringify({
+          email: sanitizedEmail,
+          password: sanitizedPassword,
+          termsAccepted,
+        }),
       });
       if (!response.ok) {
         const data = await response.json();
@@ -95,8 +106,34 @@ export function LoginForm() {
           />
         </div>
       </label>
+      {mode === "register" && (
+        <label className="flex items-start gap-2 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-xs leading-5 text-zinc-600">
+          <input
+            type="checkbox"
+            checked={termsAccepted}
+            onChange={(event) => setTermsAccepted(event.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-zinc-300 accent-zinc-900"
+            required
+          />
+          <span>
+            Согласен с{" "}
+            <Link href="/offer" className="font-medium text-zinc-950 underline underline-offset-4">
+              условиями
+            </Link>
+            ,{" "}
+            <Link href="/privacy" className="font-medium text-zinc-950 underline underline-offset-4">
+              политикой
+            </Link>{" "}
+            и{" "}
+            <Link href="/personal-data" className="font-medium text-zinc-950 underline underline-offset-4">
+              данными
+            </Link>
+            .
+          </span>
+        </label>
+      )}
       {error && <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
-      <Button type="submit" className="w-full">
+      <Button type="submit" className="w-full" disabled={mode === "register" && !termsAccepted}>
         {mode === "login" ? "Войти" : "Создать аккаунт"}
       </Button>
     </form>

@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   const parsed = registerSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Введите email без пробелов и пароль от 8 символов с буквой и цифрой" },
+      { error: "Введите email без пробелов, надежный пароль и примите пользовательское соглашение" },
       { status: 400 },
     );
   }

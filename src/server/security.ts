@@ -30,6 +30,9 @@ export const credentialsSchema = z.object({
 export const registerSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
+  termsAccepted: z.literal(true, {
+    error: "Необходимо принять пользовательское соглашение",
+  }),
 });
 
 type RateLimitBucket = {

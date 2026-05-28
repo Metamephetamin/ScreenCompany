@@ -7,12 +7,13 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-zinc-900 text-white">
+        <CardHeader className="items-center">
+          <CardTitle className="flex items-center justify-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-md bg-zinc-900 text-white">
             <Building2 className="h-5 w-5" />
-          </div>
-          <CardTitle>Личный кабинет</CardTitle>
-          <p className="text-sm text-zinc-500">Войдите или создайте аккаунт для проверки контрагентов.</p>
+            </span>
+            <span>Контурагент Риск</span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <LoginForm />

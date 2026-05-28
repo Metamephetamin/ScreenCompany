@@ -29,6 +29,17 @@ describe("auth input hardening", () => {
     const result = registerSchema.safeParse({
       email: "new@risk.local",
       password: "1234567",
+      termsAccepted: true,
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("requires legal terms consent for registration", () => {
+    const result = registerSchema.safeParse({
+      email: "new@risk.local",
+      password: "Password123",
+      termsAccepted: false,
     });
 
     expect(result.success).toBe(false);
