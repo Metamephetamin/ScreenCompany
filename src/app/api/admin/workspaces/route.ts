@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { assertSameOrigin } from "@/server/security";
-import { listWorkspaceClaims, requireAdminUser, updateWorkspaceStatus } from "@/server/admin";
+import { canAccessAdmin, listWorkspaceClaims, updateWorkspaceStatus } from "@/server/admin";
+import { getCurrentUser } from "@/server/session";
 
 const updateSchema = z.object({
   workspaceId: z.string().min(1),
@@ -10,12 +11,16 @@ const updateSchema = z.object({
 });
 
 export async function GET() {
-  await requireAdminUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!canAccessAdmin(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   return NextResponse.json({ workspaces: await listWorkspaceClaims() });
 }
 
 export async function POST(request: Request) {
-  await requireAdminUser();
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!canAccessAdmin(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const origin = assertSameOrigin(request);
   if (!origin.allowed) return NextResponse.json({ error: origin.error }, { status: 403 });
 
