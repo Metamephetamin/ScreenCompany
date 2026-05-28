@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { appSessionCookie, createAppSession } from "@/server/session";
+import { appSessionCookie, createAppSession, shouldUseSecureCookies } from "@/server/session";
 import { findUser } from "@/server/store";
 import { consumeRateLimit, credentialsSchema, rateLimitKey } from "@/server/security";
 
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   response.cookies.set(appSessionCookie, session.sessionToken, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureCookies(),
     expires: session.expires,
     path: "/",
   });

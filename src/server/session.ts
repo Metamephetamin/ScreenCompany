@@ -6,6 +6,12 @@ export const appSessionCookie = "contragent_session";
 
 const sessionMaxAgeMs = 30 * 24 * 60 * 60 * 1000;
 
+export function shouldUseSecureCookies() {
+  const publicUrl = process.env.NEXTAUTH_URL;
+  if (publicUrl) return publicUrl.startsWith("https://");
+  return process.env.NODE_ENV === "production";
+}
+
 export async function createAppSession(userId: string) {
   const sessionToken = randomBytes(32).toString("hex");
   const expires = new Date(Date.now() + sessionMaxAgeMs);
