@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
         );
         if (!limiter.allowed) return null;
 
-        const user = findUser(parsed.data.email, parsed.data.password);
+        const user = await findUser(parsed.data.email, parsed.data.password);
         if (!user) return null;
         return { id: user.email, email: user.email, name: user.name };
       },

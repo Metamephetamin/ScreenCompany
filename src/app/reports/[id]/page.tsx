@@ -9,12 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { formatDate } from "@/lib/utils";
-import { companyDataProvider } from "@/server/providers/mockProviders";
+import { companyDataProvider } from "@/server/providers";
 import { getReport } from "@/server/store";
 
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const report = getReport(id);
+  const report = await getReport(id);
   if (!report) notFound();
   const company = await companyDataProvider.findById(report.companyId);
   if (!company) notFound();

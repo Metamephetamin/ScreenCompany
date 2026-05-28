@@ -7,8 +7,8 @@ MVP SaaS-сервиса проверки ООО/ИП по ИНН/ОГРН пер
 - Next.js App Router, React, TypeScript
 - Tailwind CSS, shadcn-style локальные UI primitives, lucide-react
 - NextAuth Credentials provider
-- Prisma ORM с PostgreSQL schema
-- Mock provider abstraction для публичных источников данных
+- Prisma ORM с PostgreSQL schema, пользователями, httpOnly database sessions, историей, отчетами и мониторингом
+- Provider abstraction для публичных источников данных: mock по умолчанию, DaData при наличии ключа
 - Vitest для бизнес-логики скоринга
 
 ## Local Run
@@ -21,6 +21,16 @@ npm run dev
 Откройте `http://localhost:3000`.
 
 Демо-логин: `demo@risk.local` / `password123`.
+
+Минимальные переменные окружения:
+
+```bash
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/contragent_risk?schema=public"
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="change-me"
+CRON_SECRET="change-me-long-random"
+DADATA_API_KEY=""
+```
 
 ## Prisma
 
@@ -46,16 +56,32 @@ npx prisma db push
 - `6658123456` - ликвидация
 - `502712345678` - молодая компания без отчетности
 
-## Что сейчас является заглушкой
+## Реальные данные и мониторинг
 
-В продукте уже есть provider abstraction, но реальные API-ключи не подключены. Сейчас мокируются:
+Если `DADATA_API_KEY` задан, поиск компании по ИНН/ОГРН идет через DaData `findById/party`.
+Если ключа нет, приложение использует mock provider, чтобы локальная разработка не зависела от внешних сервисов.
 
-- данные ЕГРЮЛ/ЕГРИП;
+Мониторинг хранится в PostgreSQL. Для запуска регулярной проверки вызовите:
+
+```bash
+curl -X POST http://localhost:3000/api/cron/monitoring \
+  -H "Authorization: Bearer $CRON_SECRET"
+```
+
+Этот endpoint рассчитан на Vercel Cron, GitHub Actions cron, systemd timer или любой планировщик, который умеет делать HTTP POST.
+
+Сейчас без отдельных API-договоров остаются mock-провайдеры:
+
 - судебные дела;
-- финансовая отчетность;
 - исполнительные производства;
 - банкротные события;
-- события мониторинга;
 - платежи тарифов.
 
-Авторизация, регистрация, валидация форм, риск-скоринг, история, отчеты, PDF export и UI-сценарии работают локально. Для production следующим шагом нужно подключить persistent user/session storage через Prisma/PostgreSQL и заменить mock providers на реальные легальные API.
+Авторизация, регистрация, database sessions, валидация форм, риск-скоринг, история, отчеты, PDF export, мониторинг и UI-сценарии работают локально.
+
+## Где получить доступы
+
+- DaData: зарегистрироваться на `dadata.ru`, подтвердить почту, взять API-ключ в личном кабинете. Для базового поиска по ИНН/ОГРН используется `DADATA_API_KEY`.
+- ЕГРЮЛ/ЕГРИП ФНС: официальный сайт `egrul.nalog.ru` дает бесплатные PDF-выписки с ЭП; публичного JSON API для массовой интеграции у этого сервиса обычно нет, поэтому для продукта лучше использовать DaData или лицензированного агрегатора.
+- ГИР БО: ФНС описывает API-доступ как госуслугу, отдельно от бесплатного скачивания отчетности. Для промышленного доступа нужно оформлять доступ к API по регламенту ФНС.
+- КАД Арбитр, ФССП, Федресурс: для production не скрейпить сайты. Нужен договор с легальным API-провайдером или официальный канал доступа, если он доступен для вашего юрлица.

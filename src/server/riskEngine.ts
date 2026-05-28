@@ -11,16 +11,19 @@ import {
   courtCasesProvider,
   enforcementProvider,
   financeProvider,
-} from "@/server/providers/mockProviders";
+} from "@/server/providers";
 import { saveCheck } from "@/server/store";
 
-export async function runCompanyCheck(query: string): Promise<CompanyCheckResult | null> {
-  return buildCompanyCheck(query, { persist: true });
+export async function runCompanyCheck(
+  query: string,
+  userId?: string | null,
+): Promise<CompanyCheckResult | null> {
+  return buildCompanyCheck(query, { persist: true, userId });
 }
 
 async function buildCompanyCheck(
   query: string,
-  { persist }: { persist: boolean },
+  { persist, userId }: { persist: boolean; userId?: string | null },
 ): Promise<CompanyCheckResult | null> {
   const company = await companyDataProvider.findByInnOrOgrn(query);
   if (!company) return null;
@@ -63,7 +66,7 @@ async function buildCompanyCheck(
     sources,
   };
 
-  if (persist) saveCheck(company, report);
+  if (persist) await saveCheck(company, report, userId);
 
   return { company, risk, courtCases, finances, enforcementCases, bankruptcy, report };
 }

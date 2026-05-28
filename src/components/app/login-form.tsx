@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { LockKeyhole, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,13 +35,14 @@ export function LoginForm() {
       }
     }
 
-    const result = await signIn("credentials", {
-      email: sanitizedEmail,
-      password: sanitizedPassword,
-      redirect: false,
+    const loginResponse = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: sanitizedEmail, password: sanitizedPassword }),
     });
-    if (result?.error) {
-      setError("Неверный email или пароль");
+    if (!loginResponse.ok) {
+      const data = await loginResponse.json();
+      setError(data.error ?? "Неверный email или пароль");
       return;
     }
     router.push("/dashboard");

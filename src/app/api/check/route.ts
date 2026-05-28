@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { runCompanyCheck } from "@/server/riskEngine";
 import { getHistory } from "@/server/store";
+import { getCurrentUserId } from "@/server/session";
 
 const checkSchema = z.object({
   query: z.string().regex(/^\d{10,15}$/, "Введите корректный ИНН или ОГРН"),
 });
 
 export async function GET() {
-  return NextResponse.json({ history: getHistory() });
+  return NextResponse.json({ history: await getHistory(await getCurrentUserId()) });
 }
 
 export async function POST(request: Request) {
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
   }
 
-  const result = await runCompanyCheck(parsed.data.query);
+  const result = await runCompanyCheck(parsed.data.query, await getCurrentUserId());
   if (!result) {
     return NextResponse.json(
       { error: "Контрагент с таким ИНН/ОГРН не найден в подключенных источниках" },

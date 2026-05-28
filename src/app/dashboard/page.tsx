@@ -9,15 +9,17 @@ import { getCompanyBundle } from "@/server/riskEngine";
 import { getHistory, getMonitoringList } from "@/server/store";
 import { mockCompanies } from "@/server/providers/mockData";
 import type { CompanyCheckResult } from "@/lib/types";
+import { getCurrentUserId } from "@/server/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  const userId = await getCurrentUserId();
   const bundles = (await Promise.all(mockCompanies.map((company) => getCompanyBundle(company.id)))).filter(
     (item): item is CompanyCheckResult => Boolean(item),
   );
-  const history = getHistory();
-  const monitoring = getMonitoringList();
+  const history = await getHistory(userId);
+  const monitoring = await getMonitoringList(userId);
   const highRisk = bundles.filter((item) => item.risk.level === "high").slice(0, 3);
 
   return (

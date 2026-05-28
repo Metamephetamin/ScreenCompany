@@ -3,15 +3,17 @@ import { Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RiskBadge } from "@/components/app/risk-badge";
-import { companyDataProvider } from "@/server/providers/mockProviders";
+import { companyDataProvider } from "@/server/providers";
 import { getMonitoringList } from "@/server/store";
 import { formatDate } from "@/lib/utils";
+import { getCurrentUserId } from "@/server/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function MonitoringPage() {
+  const userId = await getCurrentUserId();
   const items = await Promise.all(
-    getMonitoringList().map(async (item) => ({
+    (await getMonitoringList(userId)).map(async (item) => ({
       item,
       company: await companyDataProvider.findById(item.companyId),
     })),

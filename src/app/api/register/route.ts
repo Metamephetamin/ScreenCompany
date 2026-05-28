@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  const user = registerUser(parsed.data.email, parsed.data.password);
+  const user = await registerUser(parsed.data.email, parsed.data.password);
   if (!user) return NextResponse.json({ error: "Пользователь уже существует" }, { status: 409 });
   return NextResponse.json({ user: { email: user.email, name: user.name } });
 }
